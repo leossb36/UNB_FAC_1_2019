@@ -51,77 +51,77 @@ read_value:
 	jr $ra #retorna valor inteiro
 
 is_greater_than: #if (arg < 255) continue
-	slti $t3, $t1, 255  #(arg < 255)
-	beq $t2, $t3, exit_prog_error #se arg for maior que 255 error! 
+	slti $t3, $t1, 255  #(arg < 255) -> retorna true ou false
+	beq $t2, $t3, exit_prog_error #se t3 for true retorna, se false error 
 
 	jr $ra #retorna valor checado
 
 print_data:
 	la $a0, print_line
 	
-	li $v0, 4 #send syscall to print string
+	li $v0, 4 #Chamada de sistema para print de string
 	syscall
 	
 	la $a0, resp1
 	
-	li $v0, 4 # send syscal to print string
+	li $v0, 4 #Chamada de sistema para print de string
 	syscall
 	
-	li $v0, 1 # send syscal to print int
+	li $v0, 1 #Chamada de sistema para print de valor
 	move $a0, $t0
 	syscall
 
 	la $a0, resp2
 	
-	li $v0, 4 # send syscal to print string
+	li $v0, 4 #Chamada de sistema para print de string
 	syscall
 	
-	li $v0, 1 # send syscal to print int
+	li $v0, 1 #Chamada de sistema para print de valor
 	move $a0, $t1
 	syscall
 	
 	la $a0, resp3
 	
-	li $v0, 4 # send syscal to print string
+	li $v0, 4 #Chamada de sistema para print de string
 	syscall
 	
-	li $v0, 1 # send syscal to print int
+	li $v0, 1 #Chamada de sistema para print de valor
 	move $a0, $t2
 	syscall
 	
 	la $a0, resp4
 	
-	li $v0, 4 # send syscal to print string
+	li $v0, 4 #Chamada de sistema para print de string
 	syscall
 	
-	li $v0, 1 # send syscal to print int
+	li $v0, 1 #Chamada de sistema para print de valor
 	move $a0, $t3
 	syscall
 	
 	la $a0, resp5
 	
-	li $v0, 4 # send syscal to print string
+	li $v0, 4 #Chamada de sistema para print de string
 	syscall
 	
-	li $v0, 1 # send syscal to print int
+	li $v0, 1 #Chamada de sistema para print de valor
 	move $a0, $t4
 	syscall
 
 	la $a0, resp6
 	
-	li $v0, 4 # send syscal to print string
+	li $v0, 4 #Chamada de sistema para print de string
 	syscall
 	
-	li $v0, 1 # send syscal to print int
+	li $v0, 1 #Chamada de sistema para print de valor
 	move $a0, $t5
 	syscall
 
 	la $a0, resp7
 	
-	li $v0, 4 # send syscal to print string
+	li $v0, 4 #Chamada de sistema para print de string
 	syscall
 	
-	li $v0, 1 # send syscal to print int
+	li $v0, 1 #Chamada de sistema para print de valor
 	move $a0, $t6
 	syscall
 	
@@ -133,7 +133,7 @@ exit_prog:
 
 exit_prog_error:
 	
-	la $a0, error
+	la $a0, error #printa erro
 
 	li $v0, 4
 	syscall
