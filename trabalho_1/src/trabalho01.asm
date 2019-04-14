@@ -10,6 +10,8 @@
 	resp6: .asciiz "\nSLL(3): "
 	resp7: .asciiz "\nSRL(1): "
 
+	error: .asciiz "\nValor de entrada maior que 255!\nSaindo..."
+
 .text
 
 main:
@@ -49,13 +51,16 @@ read_value:
 	jr $ra #retorna valor inteiro
 
 is_greater_than: #if (arg < 255) continue
-	addi $t2, $zero, 255 #definindo condição
-	slt $t3, $t1, $t2 #(arg < 255)
-	beq $t2, $t3, exit_prog #se arg for maior que 255 error! 
+	slti $t3, $t1, 255  #(arg < 255)
+	beq $t2, $t3, exit_prog_error #se arg for maior que 255 error! 
 
 	jr $ra #retorna valor checado
 
 print_data:
+	la $a0, print_line
+	
+	li $v0, 4 #send syscall to print string
+	syscall
 	
 	la $a0, resp1
 	
@@ -124,4 +129,14 @@ print_data:
 	
 exit_prog:
 	li $v0, 10 # exit
-	syscall 
+	syscall
+
+exit_prog_error:
+	
+	la $a0, error
+
+	li $v0, 4
+	syscall
+
+	li $v0, 10 # exit
+	syscall
