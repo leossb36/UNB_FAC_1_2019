@@ -9,6 +9,7 @@
 	resp5: .asciiz "\nXOR: "
 	resp6: .asciiz "\nSLL(3): "
 	resp7: .asciiz "\nSRL(1): "
+	break_line: .asciiz "\n"
 
 	error: .asciiz "\nValor de entrada maior que 255!\nSaindo..."
 
@@ -123,6 +124,11 @@ print_data:
 	
 	li $v0, 1 #Chamada de sistema para print de valor
 	move $a0, $t6
+	syscall
+	
+	la $a0, break_line
+	
+	li $v0, 4
 	syscall
 	
 	jr $ra
