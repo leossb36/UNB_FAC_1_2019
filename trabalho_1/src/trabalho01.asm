@@ -2,7 +2,7 @@
 	A: .word 0
 	B: .word 0
 
-	resp1: .asciiz "ADD: "
+	resp1: .asciiz "\nADD: "
 	resp2: .asciiz "\nSUB: "
 	resp3: .asciiz "\nAND: "
 	resp4: .asciiz "\nOR: "
@@ -11,7 +11,7 @@
 	resp7: .asciiz "\nSRL(1): "
 	break_line: .asciiz "\n"
 
-	error: .asciiz "\nValor de entrada maior que 255!\nSaindo..."
+	error: .asciiz "\nValor de entrada maior que 255!\nSaindo...\n"
 
 .text
 
@@ -22,27 +22,27 @@ main:
 	
 	lw $t1, A # corregando dados de AA para variavel de argumento
 	jal is_greater_than # checar se AA e maior que 255
-	move $t2, $t1 # copia dados para variavel de argumento
+	move $s0, $t1 # copia dados para variavel de argumento
 
 	jal read_value
 	sw $v0, B
 	
 	lw $t1, B
 	jal is_greater_than
-	move $t3, $t1
+	move $s1, $t1
 
 #fazer as operacoes
-	add $s0, $t2, $t3 # AA + BB = CC ($s0)
-	sub $s1, $t2, $t3 # AA - BB = CC
-	and $s2, $t2, $t3 #bitwise AA . BB = CC
-	or $s3, $t2, $t3 #bitwise AA + BB = CC
-	xor $s4, $t2, $t3 #bitwise (AA and ~BB) = CC -> p ^ ~q
-	sll $s5, $t2, 3 # desloca 3 bits para esquerda em $a0
-	srl $s6, $t3, 1 # desloca 1 bit para direita em $a1
+	add $t0, $s0, $s1 # AA + BB = CC ($s0)
+	sub $t1, $s0, $s1 # AA - BB = CC
+	and $t2, $s0, $s1 #bitwise AA . BB = CC
+	or $t3, $s0, $s1 #bitwise AA + BB = CC
+	xor $t4, $s0, $s1 #bitwise (AA and ~BB) = CC -> p ^ ~q
+	sll $t5, $s0, 3 # desloca 3 bits para esquerda em $a0
+	srl $t6, $s1, 1 # desloca 1 bit para direita em $a1
 
 	#funcao de print das saidas
 	jal print_data
-	#finalizando programa
+	#finalizando programa/
 	j exit_prog
 
 read_value:
@@ -58,13 +58,14 @@ is_greater_than: #if (arg < 255) continue
 	jr $ra #retorna valor checado
 
 print_data:
+	
 	la $a0, resp1
 	
 	li $v0, 4 #Chamada de sistema para print de string
 	syscall
 	
 	li $v0, 1 #Chamada de sistema para print de valor
-	move $a0, $s0
+	move $a0, $t0
 	syscall
 
 	la $a0, resp2
@@ -73,7 +74,7 @@ print_data:
 	syscall
 	
 	li $v0, 1 #Chamada de sistema para print de valor
-	move $a0, $s1
+	move $a0, $t1
 	syscall
 	
 	la $a0, resp3
@@ -82,7 +83,7 @@ print_data:
 	syscall
 	
 	li $v0, 1 #Chamada de sistema para print de valor
-	move $a0, $s2
+	move $a0, $t2
 	syscall
 	
 	la $a0, resp4
@@ -91,7 +92,7 @@ print_data:
 	syscall
 	
 	li $v0, 1 #Chamada de sistema para print de valor
-	move $a0, $s3
+	move $a0, $t3
 	syscall
 	
 	la $a0, resp5
@@ -100,7 +101,7 @@ print_data:
 	syscall
 	
 	li $v0, 1 #Chamada de sistema para print de valor
-	move $a0, $s4
+	move $a0, $t4
 	syscall
 
 	la $a0, resp6
@@ -109,7 +110,7 @@ print_data:
 	syscall
 	
 	li $v0, 1 #Chamada de sistema para print de valor
-	move $a0, $s5
+	move $a0, $t5
 	syscall
 
 	la $a0, resp7
@@ -118,7 +119,7 @@ print_data:
 	syscall
 	
 	li $v0, 1 #Chamada de sistema para print de valor
-	move $a0, $s6
+	move $a0, $t6
 	syscall
 	
 	la $a0, break_line
@@ -127,11 +128,11 @@ print_data:
 	syscall
 	
 	jr $ra
-
+	
 exit_prog:
 	li $v0, 10 # exit
 	syscall
-	
+
 exit_prog_error:
 	
 	la $a0, error #printa erro
