@@ -11,7 +11,7 @@
 	resp7: .asciiz "\nSRL(1): "
 	break_line: .asciiz "\n"
 
-	error: .asciiz "\nValor de entrada maior que 255!\nSaindo...\n"
+	error: .asciiz "\nValor de entrada maior ou igual a 255!\nSaindo...\n"
 
 .text
 
