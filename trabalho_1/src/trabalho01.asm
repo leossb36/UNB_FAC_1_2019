@@ -43,7 +43,8 @@ main:
 	#funcao de print das saidas
 	jal print_data
 	#finalizando programa/
-	j exit_prog
+	li $v0, 10 # exit
+	syscall
 
 read_value:
 	li $v0, 5 #lendo uma valor inteiro de entrada do teclado
@@ -128,10 +129,6 @@ print_data:
 	syscall
 	
 	jr $ra
-	
-exit_prog:
-	li $v0, 10 # exit
-	syscall
 
 exit_prog_error:
 	
