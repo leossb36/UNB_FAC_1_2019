@@ -1,0 +1,64 @@
+.data
+    a: .word 0
+
+    print_bit_paridade: .asciiz "bit­paridade: "
+    saida: .asciiz "saida: "
+    break_line: .asciiz "\n"
+    error: .asciiz "entrada incorreta\n"
+.text
+
+main:
+    li $v0, 5
+    syscall # input de valor
+    sw $v0, a # salva na memoria
+
+    lw $t1, a # carrega registrador t1
+    jal maior_que # checa se é maior que 128
+
+    jal bit_paridade # faz calculo de paridade
+
+    li $v0, 10
+    syscall #exit prog
+
+maior_que:
+    slti $t3, $t1, 128  #(arg < 128)
+	bge $t2, $t3, exit_prog_error #se t3 for true retorna, se false error 
+
+	jr $ra #retorna valor checado
+
+
+bit_paridade:
+    
+
+print_resultado:
+    la $a0, print_bit_paridade
+	
+	li $v0, 4 #Chamada de sistema para print de string
+	syscall
+	
+	li $v0, 1 #Chamada de sistema para print de valor
+	#move $a0, colocar resultado aqui de paridade
+	syscall
+
+	la $a0, saida
+	
+	li $v0, 4 #Chamada de sistema para print de string
+	syscall
+	
+	li $v0, 1 #Chamada de sistema para print de valor
+	# move $a0, $t1 colocar resultado de saida aqui
+	syscall
+
+    la $a0, break_line
+
+    li $v0, 4
+    syscall
+
+exit_prog_error:
+	la $a0, error #printa erro
+
+	li $v0, 4
+	syscall
+
+	li $v0, 10 # exit
+	syscall
