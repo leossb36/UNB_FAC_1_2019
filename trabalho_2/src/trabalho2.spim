@@ -43,7 +43,7 @@ bit_paridade:
     # primeiro de tudo devemos converter a entrada de hexa para binario
     # 127
     # 0x000007F
-    # 0111 1111
+    # 0111 1111 
     # maior representação possivel em hexa
     
     # 0000 0001 = 1
@@ -61,65 +61,89 @@ bit_paridade:
     # guarda em novo registrador
     # definir mascara para shift
 
-    add $t0, $t0, $zero # definindo ponto de parada
     addi $t1, $t1, 64 # definindo mascara
     addi $t3, $t3, 2 # operando para checar se é par ou impar
     
-    and $t2, $s0, $t1 # A . mask = 0111 1111 . 0100 0000 = 0100 0000
-    beq $t1, $t2, conta_bit # so é interessante contar os 1's
+    and $t2, $s0, $t1 # A . mask = 0000 1010 . 0100 0000 = 0100 0000 # so é interessante contar os 1's
     add $v0, $t2, $zero # salva valor do bit
     sw $v0, bit7 # salva bit mais significativo na memoria
     srl $t1, $t1, 1 # shift mascara 1 bit para direita
 
-    and $t2, $v0, $t1 # A . mask = 0111 1111 . 0010 0000 = 0010 0000
-    beq $t1, $t2, conta_bit # so é interessante contar os 1's
+    and $t2, $s0, $t1 # A . mask = 0111 1111 . 0010 0000 = 0010 0000
     add $v0, $t2, $zero # guarda bit
     sw $v0, bit6 # salva sexto bit na memoria
     srl $t1, $t1, 1 # shift mascara 1 bit para direita            
 
-    and $t2, $v0, $t1 # A . mask = 0111 1111 . 0001 0000 = 0001 0000
-    beq $t1, $t2, conta_bit # so é interessante contar os 1's
+    and $t2, $s0, $t1 # A . mask = 0111 1111 . 0001 0000 = 0001 0000
     add $v0, $t2, $zero # guarda bit
     sw $v0, bit5 # salva quinto bit na memoria
     srl $t1, $t1, 1 # shift mascara 1 bit para direita
     
-    and $t2, $v0, $t1 # A . mask = 0111 1111 . 0000 1000 = 0000 1000
-    beq $t1, $t2, conta_bit # so é interessante contar os 1's
+    and $t2, $s0, $t1 # A . mask = 0111 1111 . 0000 1000 = 0000 1000
     add $v0, $t2, $zero # guarda bit
     sw $v0, bit4 #salva na memoria quarto bit
     srl $t1, $t1, 1 # shift mascara 1 bit para direita
     
-    and $t2, $v0, $t1 # A . mask = 0111 1111 . 0000 0100 = 0000 0100
-    beq $t1, $t2, conta_bit # so é interessante contar os 1's
+    and $t2, $s0, $t1 # A . mask = 0111 1111 . 0000 0100 = 0000 0100
     add $v0, $t2, $zero # guarda bit
     sw $v0, bit3 # salva terceiro bit
     srl $t1, $t1, 1 # shift mascara 1 bit para direita
     
-    and $t2, $v0, $t1 # A . mask = 0111 1111 . 0000 0010 = 0000 0010
-    beq $t1, $t2, conta_bit # so é interessante contar os 1's
+    and $t2, $s0, $t1 # A . mask = 0111 1111 . 0000 0010 = 0000 0010
     add $v0, $t2, $zero # guarda bit
     sw $v0, bit2 # salva na memoria segundo bit
     srl $t1, $t1, 1 # shift mascara 1 bit para direita
     
-    and $t2, $v0, $t1 # A . mask = 0111 1111 . 0000 0001 = 0000 0001
-    beq $t1, $t2, conta_bit # so é interessante contar os 1's
+    and $t2, $s0, $t1 # A . mask = 0111 1111 . 0000 0001 = 0000 0001
     add $v0, $t2, $zero # guarda bit
     sw $v0, bit1 # salva bit menos significativo na memoria
     srl $t1, $t1, 1 # shift mascara 1 bit para direita
 
-    div $s3, $t3 # bits de 1's / 2
-    mfhi $t4 # bits de 1's mod 2
-    beq $t4, $zero, se_par # se ele for par vai add 1 bit significativo
+    lw $t0, bit7
+    add $s5, $s5, $t0
     
-    add $s4, $s4, $zero # se ele for impar vai dar resultado zero
+    lw $t0, bit6
+    add $s5, $s5, $t0
+    
+    lw $t0, bit5
+    add $s5, $s5, $t0
 
-    jr $ra
+    lw $t0, bit4
+    add $s5, $s5, $t0    
 
+    lw $t0, bit3
+    add $s5, $s5, $t0
+
+    lw $t0, bit2
+    add $s5, $s5, $t0
+
+    lw $t0, bit1
+    add $s5, $s5, $t0
+
+    loop:
+    # i == 1
+    # t2 == 2
+    # size == 8
+    # test == s5
+        addi $t6, $t6, 1 # 0100 0000
+        addi $t3, $t3, 8
+
+        div $s5, $t2 # test / 2 ---- 8/2 = 4
+        mfhi $t4 # test % i -- 4 mod 2 = 0
+        bge $t6, $t3, loop # i < size
+    
+    # fora do loop
+    beq $t4, $zero, se_impar # se ele for impar vai add 1 bit significativo
+    beq $t4, $zero, se_par # se ele for par não add bit
     se_par:
-        addi $s4, $s4, 1
-        addi $s0, $s0, 128
-        move $v0, $s0
-        sw $v0, bit0
+        add $s4, $s4, $zero # se ele for par vai dar resultado zero
+        jr $ra
+
+    se_impar:
+        addi $s4, $s4, 1 # informa bit de paridade como true -> 1 - true, 0 - false
+        addi $s0, $s0, 128 # adiciona o 8º bit como 1
+        move $v0, $s0 # copia para registrador de retorno de função
+        sw $v0, bit0 # salva na memoria
 
         jr $ra
 
