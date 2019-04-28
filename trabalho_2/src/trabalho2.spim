@@ -11,9 +11,10 @@
 
     print_bit_paridade: .asciiz "bit­paridade: "
     saida: .asciiz "\nsaida: "
-    break_line: .asciiz "\n"
+    break_line: .asciiz "\n\n"
     error: .asciiz "entrada incorreta\n"
 .text
+.globl main
 
 main:
     
@@ -99,7 +100,7 @@ bit_paridade:
     srl $t1, $t1, 1 # shift mascara 1 bit para direita
 
     lw $t0, bit7
-    add $s5, $s5, $t0 # 64 
+    add $s5, $s5, $t0 # 64
     
     lw $t0, bit6
     add $s5, $s5, $t0 # 32
@@ -121,48 +122,60 @@ bit_paridade:
 
     # a & (b - 1)
     addi $t1, $t1, 64
-    addi $t2, $t2, 1 # subtrator
-    sub $t3, $t2, $t1 # 63
-    and $s6, $s5, $t3 # arg & (bit - 1) - > argumento % 64
-    add $t4, $t4, $s6 # somando mais 1 bit 
+    and $s6, $s5, $t1 # arg & 64
+    mfhi $s7
+    add $t4, $t4, $s7 # somando mais 1 bit 
 
     srl $t1, $t1, 1 # 32
-    sub $t3, $t2, $t1 # 32 - 1 = 31
-    and $s6, $s5, $t3 # arg & (bit - 1) - > argumento % 32
-    add $t4, $t4, $s6 # somando mais 1 bit
+    and $s6, $s5, $t1 # arg & bit - > argumento % 32
+    mfhi $s7
+    add $t4, $t4, $s7 # somando mais 1 bit
 
     srl $t1, $t1, 1 # 16
-    sub $t3, $t2, $t1 # 16 - 1 = 15
-    and $s6, $s5, $t3 # arg & (bit - 1) - > argumento % 16
-    add $t4, $t4, $s6 # somando mais 1 bit
+    and $s6, $s5, $t1 # arg & bit - > argumento % 16
+    mfhi $s7
+    add $t4, $t4, $s7 # somando mais 1 bit
 
     srl $t1, $t1, 1 # 8
-    sub $t3, $t2, $t1 # 8 - 1 = 7
-    and $s6, $s5, $t3 # arg & (bit - 1) - > argumento % 8
-    add $t4, $t4, $s6 # somando mais 1 bit
+    and $s6, $s5, $t1 # arg & (bit - 1) - > argumento % 8
+    mfhi $s7
+    add $t4, $t4, $s7 # somando mais 1 bit
 
     srl $t1, $t1, 1 # 4
-    sub $t3, $t2, $t1 # 4 - 1 = 3
-    and $s6, $s5, $t3 # arg & (bit - 1) - > argumento % 4
-    add $t4, $t4, $s6 # somando mais 1 bit
+    and $s6, $s5, $t1 # arg & (bit - 1) - > argumento % 4
+    mfhi $s7
+    add $t4, $t4, $s7 # somando mais 1 bit
 
     srl $t1, $t1, 1 # 2
-    sub $t3, $t2, $t1 # 2 - 1 = 1
-    and $s6, $s5, $t3 # arg & (bit - 1) - > argumento % 2
-    add $t4, $t4, $s6 # somando mais 1 bit
+    and $s6, $s5, $t1 # arg & (bit - 1) - > argumento % 2
+    mfhi $s7
+    add $t4, $t4, $s7 # somando mais 1 bit
 
     srl $t1, $t1, 1 # 1
-    sub $t3, $t2, $t1 # 1 - 1 = 0
-    and $s6, $s5, $t3 # arg & (bit - 1) - > argumento % 1
-    add $t4, $t4, $s6 # somando mais 1 bit
-    
-    # 5 % 2 = 1
-    # 6 % 2 = 0
+    and $s6, $s5, $t1 # arg & (bit - 1) - > argumento % 1
+    mfhi $s7
+    add $t4, $t4, $s7 # somando mais 1 bit
+     
+
+    # 0000 0010 . 0100 0000 = 0
+    # 0000 0010 . 0001 0000 = 0
+    # 0000 0010 . 0000 1000 = 0
+    # 0000 0010 . 0000 0100 = 0
+    # 0000 0010 . 0000 0010 = 1
+    # 0000 0010 . 0000 0001 = 0
+    # 0000 0010 . 0000 0000 = 0
+
+    # 0110 1001 = 1
+    # 2
+    # 3
+    # 4
+
+    # 1 % 2 = 1
+    # 2 % 2 = 0
 
     # 0000 0101 . 0000 0001 = 1
     # 0000 0110 . 0000 0001 = 0
-
-    and $t4, $t4, $t2 # arg & (1) -> argumento % 2 
+    andi $t4, $t4, 1 # arg & 1 = 0100 . 0001 = 0 
 
     bne $t4, $zero, se_impar # se ele for impar vai add 1 bit significativo
     beq $t4, $zero, se_par # se ele for par não add bit
