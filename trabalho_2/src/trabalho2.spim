@@ -122,39 +122,32 @@ bit_paridade:
 
     # a & (b - 1)
     addi $t1, $t1, 64
-    and $s6, $s5, $t1 # arg & 64
-    mfhi $s7
-    add $t4, $t4, $s7 # somando mais 1 bit 
+    and $s6, $s5, $t1 # arg & 64 
+    add $t4, $t4, $s6 # somando mais 1 bit 
 
     srl $t1, $t1, 1 # 32
     and $s6, $s5, $t1 # arg & bit - > argumento % 32
-    mfhi $s7
-    add $t4, $t4, $s7 # somando mais 1 bit
+    add $t4, $t4, $s6 # somando mais 1 bit
 
     srl $t1, $t1, 1 # 16
     and $s6, $s5, $t1 # arg & bit - > argumento % 16
-    mfhi $s7
-    add $t4, $t4, $s7 # somando mais 1 bit
+    add $t4, $t4, $s6 # somando mais 1 bit
 
     srl $t1, $t1, 1 # 8
     and $s6, $s5, $t1 # arg & (bit - 1) - > argumento % 8
-    mfhi $s7
-    add $t4, $t4, $s7 # somando mais 1 bit
+    add $t4, $t4, $s6 # somando mais 1 bit
 
     srl $t1, $t1, 1 # 4
     and $s6, $s5, $t1 # arg & (bit - 1) - > argumento % 4
-    mfhi $s7
-    add $t4, $t4, $s7 # somando mais 1 bit
+    add $t4, $t4, $s6 # somando mais 1 bit
 
     srl $t1, $t1, 1 # 2
     and $s6, $s5, $t1 # arg & (bit - 1) - > argumento % 2
-    mfhi $s7
-    add $t4, $t4, $s7 # somando mais 1 bit
+    add $t4, $t4, $s6 # somando mais 1 bit
 
     srl $t1, $t1, 1 # 1
     and $s6, $s5, $t1 # arg & (bit - 1) - > argumento % 1
-    mfhi $s7
-    add $t4, $t4, $s7 # somando mais 1 bit
+    add $t4, $t4, $s6 # somando mais 1 bit
      
 
     # 0000 0010 . 0100 0000 = 0
