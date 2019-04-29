@@ -9,7 +9,7 @@
     bit1: .word 0
     bit0: .word 0
 
-    print_bit_paridade: .asciiz "bit­paridade: "
+    bitparidade: .asciiz "bit-paridade: "
     saida: .asciiz "\nsaida: "
     break_line: .asciiz "\n"
     error: .asciiz "entrada incorreta\n"
@@ -182,6 +182,10 @@ bit_paridade:
         bne $t4, $zero, se_impar_high # se ele for par não add bit
         se_par_high:
             add $s4, $s4, $zero # se ele for par vai dar resultado zero
+            addi $s0, $s0, 0
+            move $v0, $s0
+            sw $v0, bit0
+            
             jr $ra
 
         se_impar_high:
@@ -252,6 +256,10 @@ bit_paridade:
         bne $t4, $zero, se_impar # se ele for par não add bit
         se_par:
             add $s4, $s4, $zero # se ele for par vai dar resultado zero
+            addi $s0, $s0, 0
+            move $v0, $s0
+            sw $v0, bit0
+
             jr $ra
 
         se_impar:
@@ -264,7 +272,7 @@ bit_paridade:
 
 print_resultado:
 
-    la $a0, print_bit_paridade
+    la $a0, bitparidade
 	
 	li $v0, 4 #Chamada de sistema para print de string
 	syscall
