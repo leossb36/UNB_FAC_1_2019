@@ -50,12 +50,11 @@ factory:
 		j while01
 		
 	for:
-		#aqui tem q ter toda a condição de raiz quadrada para verificar se fica ou não no laço
-		#falta a incrementação em $t7 + 2 para nao ficar em laço infinito
+		#aqui tem q ter toda a condição de raiz quadrada para verificar se fica ou não no laço, caso nao fique, j exit_for
 		while02:
 			div $t1, $t7
-			mfhi $t6 #se a divisão tiver resto diferente de 0, sai do loop
-			#bne $t6, $zero, for
+			mfhi $t6 #se a divisão tiver resto diferente de 0, sai do while
+			bne $t6, $zero, exit_while02
 			
 			li $v0, 1
 			add $a0, $t7, $zero
@@ -68,9 +67,15 @@ factory:
 			div $t1, $t1, $t7
 			j while02
 			
-	bgt $t1, 2, exit
-	j $ra
-	exit:
+		exit_while02:
+			addi $t7, $t7, 2 #saindo do laço while e incrementando o for
+			j for
+	
+	exit_for:		
+		bgt $t1, 2, exit_factorial
+		j $ra
+		
+	exit_factorial:
 		li $v0, 1
 		add $a0, $t1, $zero		
 		syscall
@@ -81,8 +86,6 @@ factory:
 		
 		j $ra
 		
-		
-
 read_value:
 	li $v0, 5 #lendo uma valor inteiro de entrada do teclado
 	syscall
