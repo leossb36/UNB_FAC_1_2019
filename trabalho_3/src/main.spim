@@ -17,9 +17,6 @@ main:
 	move $s0, $t1 # copia dados para variavel de argumento
     
     jal factory
-	#funcao de print das saidas
-	loop: # printar fatoração
-        jal print_data
     
     #print quebra de linha
     la $a0, break_line
@@ -34,6 +31,57 @@ main:
 	syscall
 
 factory:
+	addi $s1, $zero, 2 #vamos usar no primeiro while para fatorar pelo caso base, 2
+	addi $t7, $s1, 1 #t7 = i, no caso i = 3, vamos usar no laço FOR
+	while01:
+		div $t1, $s1
+		mfhi $t6 #se a divisão tiver resto diferente de 0, sai do laço
+		bne $t6, $zero, for
+	
+		li $v0, 1
+		move $a0, $s1
+		syscall
+		
+		la $a0, break_line
+		li $v0, 4
+		syscall
+		
+		div $t1, $t1, 2 #dividindo o numero para nao entrar em laço infinito
+		j while01
+		
+	for:
+		#aqui tem q ter toda a condição de raiz quadrada para verificar se fica ou não no laço
+		#falta a incrementação em $t7 + 2 para nao ficar em laço infinito
+		while02:
+			div $t1, $t7
+			mfhi $t6 #se a divisão tiver resto diferente de 0, sai do loop
+			#bne $t6, $zero, for
+			
+			li $v0, 1
+			add $a0, $t7, $zero
+			syscall
+			
+			la $a0, break_line
+			li $v0, 4
+			syscall
+			
+			div $t1, $t1, $t7
+			j while02
+			
+	bgt $t1, 2, exit
+	j $ra
+	exit:
+		li $v0, 1
+		add $a0, $t1, $zero		
+		syscall
+		
+		la $a0, break_line
+		li $v0, 4
+		syscall
+		
+		j $ra
+		
+		
 
 read_value:
 	li $v0, 5 #lendo uma valor inteiro de entrada do teclado
