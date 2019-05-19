@@ -17,15 +17,6 @@ main:
 	move $s0, $t1 # copia dados para variavel de argumento
     
     jal factory
-    
-    #print quebra de linha
-    la $a0, break_line
-	
-	li $v0, 4
-	syscall
-	
-	jr $ra
-
 	#finalizando programa/
 	li $v0, 10 # exit
 	syscall
@@ -51,6 +42,10 @@ factory:
 		
 	for:
 		#aqui tem q ter toda a condição de raiz quadrada para verificar se fica ou não no laço, caso nao fique, j exit_for
+		#valor tem de ser menor ou igual a raiz quadrada de um numero
+		add $t2, $t1, $zero
+		div $t2, $t7
+		bgt $t7, $t2, exit_for 
 		while02:
 			div $t1, $t7
 			mfhi $t6 #se a divisão tiver resto diferente de 0, sai do while
@@ -73,7 +68,7 @@ factory:
 	
 	exit_for:		
 		bgt $t1, 2, exit_factorial
-		j $ra
+		jr $ra
 		
 	exit_factorial:
 		li $v0, 1
@@ -84,7 +79,7 @@ factory:
 		li $v0, 4
 		syscall
 		
-		j $ra
+		jr $ra
 		
 read_value:
 	li $v0, 5 #lendo uma valor inteiro de entrada do teclado
@@ -92,12 +87,12 @@ read_value:
 
 	jr $ra #retorna valor inteiro
 
-is_greater_than: #if (arg < 32768) continue
+is_greater_than: #if (arg < 32767) continue
 	addi $t2, $t2, 1
-    slti $t3, $t1, 32768  #(arg < 32768) -> retorna true ou false
-    sge $t4, $t1, $t5
-    and $t2, $t3, $t4
-	beq $t2, $t3, exit_prog_error #se t3 for true retorna, se false error 
+    slti $t3, $t1, 32767  #(arg < 32767) -> retorna true ou false
+    sge $t4, $t1, $t2 #(arg <= 1)
+	bne $t3, $t2, exit_prog_error #se t3 for true retorna, se false error
+	bne $t4, $t2, exit_prog_error # se t4 nao for igual a zero
 
 	jr $ra #retorna valor checado
 
