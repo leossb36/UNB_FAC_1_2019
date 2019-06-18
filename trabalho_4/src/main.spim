@@ -1,0 +1,111 @@
+.data
+	my_input: .space 17
+
+    mask: .word 0x00FFFF
+
+    my_crc: .word 0
+
+	break_line: .asciiz "\n"
+
+.text
+
+main:
+	li $v0, 8 # leitura da string de my_input
+	
+    la $a0, my_input
+    syscall
+
+    jal crc16_buypass
+
+    jal convert_to_hex
+
+    li $v0, 4
+
+    la $a0, my_input
+    syscall
+
+    move $a0, $s0
+    li $v0, 1
+
+    syscall
+
+    li $v0, 4
+
+    la $a0, break_line
+    syscall
+
+    li $v0, 10 # exit
+    syscall
+
+crc16_buypass:
+    la $a0, my_input # carregando string como argumento
+
+    # --------------------------------------- #
+    # output crc -> my_crc = $s0
+    # --------------------------------------- #
+    
+    # unsigned int 8 bytes:
+    # d = $s1, s = $s2, p = $s3
+    
+    # unsigned int 16 bytes:
+    # c = $s4, r = $s5, t = $s6
+    addi $t0, $t0, 0 # contador
+
+    while: # inicio do loop
+        beq $t0, $t1, exit # se contador for igual tamanho da string, sai do loop
+        
+        lb $s1, 0($a1) # carrega caracter de cada posição do vetor
+
+        srl $t2, $s4, 8 # c >> 8
+
+        xor $s2, $s1, $t2 # s = d ^ (c >> 8) 
+
+        srl $t3, $s2, 4 # s >> 4
+
+        xor $s3, $s2, $t3 # p = s ^ (s >> 4)
+
+        srl $t4, $s3, 2 # p >> 2
+
+        xor $s3, $s3, $t4 # p = p ^ (p >> 2)
+
+        srl $t5, $s3, 1 # p >> 1
+
+        xor $s3, $s3, $t5 # p = p ^ (p >> 1) 
+
+        andi $s3, $s3, 1 # p = p & 1
+
+        sll $t6, $s2, 1 # s << 1 
+
+        or $s6, $s3, $t6 # t = p | (s << 1)
+
+        sll $s4, $s4, 8 # c >> 8
+
+        sll $t7, $s6, 15 # t << 15
+
+        sll $t8, $s6, 1 # t << 1
+
+        xor $t9, $s4, $t7 # (c << 8)^(t << 15)
+
+        xor $t9, $t9, $s6 # (c << 8)^(t << 15)^t
+
+        xor $t9, $t9, $t8 # r = (c << 8)^(t << 15)^t^(t << 1)
+
+        add $s5, $s5, $t9 # copiando resultado para variavel s5
+        
+        add $s4, $s4, $s5 # c = r
+
+        addi $t0, $t0, 1 # contador++
+        
+        addi $a1, $a1, 1 # my_input[contador]->next
+
+        j while
+
+    exit: # retorna para main
+        jr $ra
+
+convert_to_hex:
+    la $a1, mask # carregando valor da mascara
+
+    la $s0, my_crc
+
+    and $s0, $a1, $s4 # my_crc = 0x00FFFF&crc16_buypass(my_input, strlen(my_input));
